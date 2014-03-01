@@ -1,11 +1,14 @@
 package presentationlayer;
 
+import businesslayer.*;
 import java.awt.BorderLayout;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,10 +22,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame{
 
 	private static final int mainFrameWidth = 600;
 	private static final int mainFrameHeight = 700;
@@ -67,9 +68,9 @@ public class MainFrame extends JFrame {
 		getContentPane().add( topPanel );
 
 		// Create the tab pages
-		createPage1();
-		createPage2();
-		createPage3();
+		createNewWordPage();
+		createShowHistoryPage();
+		createSearchPage();
 
 
 		// Create a tabbed pane
@@ -78,11 +79,6 @@ public class MainFrame extends JFrame {
 		tabbedPane.addTab( "Show history", panel2 );
 		tabbedPane.addTab( "Search", panel3 );
 		topPanel.add( tabbedPane, BorderLayout.CENTER );
-
-
-
-
-
 
 	}
 	
@@ -119,19 +115,11 @@ public class MainFrame extends JFrame {
 	      menuBar.add(fileMenu);
 	}
 
-	private void createPage1()
-	{
+	private void createNewWordPage() {
 		panel1 = new JPanel();
 		panel1.setLayout( null );
 
 		final JTextField wordTF = new JTextField();
-		wordTF.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-//				if (wordTF.getText() == null)
-					wordTF.setText("Yes");
-			}
-		});
 		wordTF.setBounds(214, 22, 217, 20);
 		panel1.add(wordTF);
 
@@ -186,12 +174,32 @@ public class MainFrame extends JFrame {
 		panel1.add(sampleLbl);
 
 		final JButton insertBtn = new JButton("insert");
+		
 		insertBtn.setBounds(64, 562, 89, 23);
 		panel1.add(insertBtn);
 
 		final JButton clearBtn = new JButton("clear");
-		clearBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		clearBtn.setBounds(458, 562, 89, 23);
+		panel1.add(clearBtn);
+		businesslayer.Manipulator( wordTF.getText(), pronTF.getText(), meaningTA.getText(), oppositTF.getText()
+				, sampleTA.getText(), Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis() ) );
+		class LocalActionListener implements ActionListener {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == insertBtn) {
+					
+					if ( businesslayer.Manipulator( wordTF.getText(), pronTF.getText(), meaningTA.getText(), oppositTF.getText()
+							, sampleTA.getText(), Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis() ) )
+						makeClear();
+						
+				}
+				else if (e.getSource() == clearBtn) {
+					makeClear();
+				}
+				
+			}
+
+			void makeClear() {
 				wordTF.setText("");
 				pronTF.setText("");
 				meaningTA.setText("");
@@ -199,13 +207,13 @@ public class MainFrame extends JFrame {
 				oppositTF.setText("");
 				sampleTA.setText("");
 			}
-		});
-		clearBtn.setBounds(268, 562, 89, 23);
-		panel1.add(clearBtn);
+			
+		}
+		insertBtn.addActionListener(new LocalActionListener());
+		clearBtn.addActionListener(new LocalActionListener());
 	}
 
-	private void createPage2()
-	{
+	private void createShowHistoryPage() {
 		panel2 = new JPanel();
 		panel2.setLayout( null );
 
@@ -285,15 +293,49 @@ public class MainFrame extends JFrame {
 		panel2.add(previousBtn);
 
 		final JButton nextBtn = new JButton("Next   >");
-		nextBtn.setBounds(261, 562, 96, 23);
+		nextBtn.setBounds(458, 562, 96, 23);
 		panel2.add(nextBtn);
+		
+		final JPanel changeJP = new JPanel();
+		changeJP.setBounds(214, 562, 215, 23);
+		changeJP.setLayout(null);
+		
+		final JButton deleteBtn = new JButton("delete");
+		deleteBtn.setBounds(0, 0, 63, 23);
+		changeJP.add(deleteBtn);
+		
+		final JButton updateBtn = new JButton("update");
+		updateBtn.setBounds(148, 0, 67, 23);
+		changeJP.add(updateBtn);
+		
+		panel2.add(changeJP);
+		
+		class LocalActionListener implements ActionListener {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == previousBtn) {
+				}
+				else if (e.getSource() == nextBtn) {
+					
+				}
+				else if (e.getSource() == deleteBtn) {
+					
+				}
+				else if (e.getSource() == updateBtn) {
+					
+				}
+			}
+		}
+		previousBtn.addActionListener(new LocalActionListener());
+		nextBtn.addActionListener(new LocalActionListener());
+		deleteBtn.addActionListener(new LocalActionListener());
+		updateBtn.addActionListener(new LocalActionListener());
 	}
 
-	private void createPage3()
-	{
+	private void createSearchPage()	{
 		panel3 = new JPanel();
 		panel3.setLayout( null );
-
 
 		final JTextArea meaningTA = new JTextArea();
 		meaningTA.setBounds(214, 90, 215, 161);
@@ -355,11 +397,41 @@ public class MainFrame extends JFrame {
 		panel3.add(sampleLbl);
 
 		final JButton findBtn = new JButton("Find");
-		findBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		findBtn.setBounds(192, 561, 96, 23);
+		findBtn.setBounds(25, 550, 96, 23);
 		panel3.add(findBtn);
+		
+		final JPanel changeJP = new JPanel();
+		changeJP.setBounds(214, 550, 215, 23);
+		changeJP.setLayout(null);
+		
+		final JButton deleteBtn = new JButton("delete");
+		deleteBtn.setBounds(0, 0, 63, 23);
+		changeJP.add(deleteBtn);
+		
+		final JButton updateBtn = new JButton("update");
+		updateBtn.setBounds(148, 0, 67, 23);
+		changeJP.add(updateBtn);
+		panel3.add(changeJP);
+		
+		class LocalActionListener implements ActionListener {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == findBtn) {
+					
+				}
+				if (e.getSource() == deleteBtn) {
+					
+				}
+				if (e.getSource() == updateBtn) {
+					
+				}
+			}
+		}
+		
+		findBtn.addActionListener(new LocalActionListener());
+		deleteBtn.addActionListener(new LocalActionListener());
+		updateBtn.addActionListener(new LocalActionListener());
 	}
+	
 }
